@@ -121,7 +121,7 @@ impl Client {
         }
     }
 
-    pub async fn get(&mut self, path: String) -> Result<reqwest::Response, HttpError> {
+    pub async fn get(&self, path: String) -> Result<reqwest::Response, HttpError> {
         let res = self.client.get(self.base_url.to_owned() + path.as_str())
             .header("Authorization", self.key.clone())
             .send()
@@ -133,7 +133,7 @@ impl Client {
 
         Ok(res)
     }
-    pub async fn post(&mut self, path: String, body: Value) -> Result<reqwest::Response, HttpError> {
+    pub async fn post(&self, path: String, body: Value) -> Result<reqwest::Response, HttpError> {
         let res = self.client.post(self.base_url.to_owned() + path.as_str())
             .header("Authorization", self.key.clone())
             .header("Content-Type", "application/json")
@@ -148,21 +148,21 @@ impl Client {
         Ok(res)
     }
 
-    pub async fn resolve_discord_user_from_address(&mut self, address: String) -> Result<String, HttpError> {
+    pub async fn resolve_discord_user_from_address(&self, address: String) -> Result<String, HttpError> {
         let res = self.get("/address/resolve/discord/".to_owned() + address.as_str())
             .await?;
         let body = res.json::<ResolveUserFromAddressAnswer>().await?;
         Ok(body.id)
     }
 
-    pub async fn get_discord_user_address(&mut self, id: String) -> Result<String, HttpError> {
+    pub async fn get_discord_user_address(&self, id: String) -> Result<String, HttpError> {
         let res = self.get("/address/discord/".to_owned() + id.as_str())
             .await?;
         let body = res.json::<ResolveAddressFromUserAnswer>().await?;
         Ok(body.address)
     }
 
-    pub async fn get_token(&mut self, ticker: String) -> Result<Token, HttpError> {
+    pub async fn get_token(&self, ticker: String) -> Result<Token, HttpError> {
         let res = self.post("/vite/get_token".to_owned(), serde_json::json!({
             "ticker": ticker
         }))
@@ -171,7 +171,7 @@ impl Client {
         Ok(body)
     }
 
-    pub async fn parse_amount(&mut self, amount: String) -> Result<Amount, HttpError> {
+    pub async fn parse_amount(&self, amount: String) -> Result<Amount, HttpError> {
         let res = self.post("/vite/parse_amount".to_owned(), serde_json::json!({
             "amount": amount
         }))
@@ -180,7 +180,7 @@ impl Client {
         Ok(body)
     }
 
-    pub async fn get_addresses(&mut self) -> Result<Vec<Address>, HttpError> {
+    pub async fn get_addresses(&self) -> Result<Vec<Address>, HttpError> {
         let res = self.get("/bank/addresses".to_owned())
             .await?;
         let body = res.json::<Vec<String>>().await?;
@@ -194,14 +194,14 @@ impl Client {
         Ok(addresses)
     }
 
-    pub async fn get_balances(&mut self) -> Result<Vec<GetBalancesAnswer>, HttpError> {
+    pub async fn get_balances(&self) -> Result<Vec<GetBalancesAnswer>, HttpError> {
         let res = self.get("/bank/balances".to_owned())
             .await?;
         let body = res.json::<Vec<GetBalancesAnswer>>().await?;
         Ok(body)
     }
 
-    pub async fn get_balance(&mut self, account: BankAccount) -> Result<Balances, HttpError> {
+    pub async fn get_balance(&self, account: BankAccount) -> Result<Balances, HttpError> {
         let id = match account {
             BankAccount::Address(address) => address.to_string(),
             BankAccount::Index(index) => index.to_string()
@@ -212,14 +212,14 @@ impl Client {
         Ok(body)
     }
     
-    pub async fn new_address(&mut self) -> Result<Address, HttpError> {
+    pub async fn new_address(&self) -> Result<Address, HttpError> {
         let res = self.post("/bank/addresses/new".to_owned(), serde_json::json!({}))
             .await?;
         let body = res.json::<Address>().await?;
         Ok(body)
     }
 
-    pub async fn send_transaction(&mut self, transaction: TransactionRequest) -> Result<Transaction, HttpError> {
+    pub async fn send_transaction(&self, transaction: TransactionRequest) -> Result<Transaction, HttpError> {
         let id = bank_account_to_id(transaction.from);
         let data = serde_json::json!({
             "to": transaction.to,
@@ -227,7 +227,6 @@ impl Client {
             "amount": transaction.amount,
             "data": hex::encode(transaction.data)
         });
-        println!("{:?}", data);
         let res = self.post("/bank/send/".to_owned() + id.as_str(), data.clone())
             .await?;
 
