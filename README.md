@@ -1,5 +1,5 @@
 # Client
-```rs
+```rust
 #[tokio::main]
 async fn main(){
     let mut client = vitabot_api::Client::new("Your api key from vitamin.tips".to_string());
@@ -33,7 +33,7 @@ async fn main(){
 
 # Discord Faucet Example
 > This example was extended from the [Serenity Example Bot](https://github.com/serenity-rs/serenity/tree/current#example-bot).
-```rs
+```rust
 use std::env;
 
 use serenity::async_trait;
