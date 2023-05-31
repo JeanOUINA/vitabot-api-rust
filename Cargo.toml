@@ -1,9 +1,18 @@
 [package]
-name = "rust-template"
-version = "0.1.0"
+name = "vitabot_api"
+version = "1.0.0"
 edition = "2021"
+license = "MIT"
+description = "Interact with the https://vitamin.tips api"
+readme = "README.md"
+homepage = "https://vitamin.tips"
+repository = "https://github.com/jeanouina/vitabot-api-rust"
 
 [dependencies]
+reqwest = { version = "0.11", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
+serde_json = { version = "1.0.91" }
+serde = { version = "1", features = ["derive"] }
+hex = "0.4.3"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
